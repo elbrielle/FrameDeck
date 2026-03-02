@@ -1,0 +1,47 @@
+{
+  "manifest_version": 3,
+  "name": "FrameDeck",
+  "version": "1.0.0",
+  "description": "Auto-rotate your browser tabs on any schedule. Open your sites, hit Start, go fullscreen — FrameDeck handles the rest. Perfect for dashboards, kiosks, classrooms, and digital signage.",
+  "permissions": [
+    "tabs",
+    "storage",
+    "offscreen"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "commands": {
+    "toggle-rotation": {
+      "suggested_key": {
+        "default": "Alt+Space"
+      },
+      "description": "Toggle tab rotation play/pause"
+    },
+    "next-tab": {
+      "suggested_key": {
+        "default": "Alt+Right"
+      },
+      "description": "Switch to next tab in rotation"
+    },
+    "prev-tab": {
+      "suggested_key": {
+        "default": "Alt+Left"
+      },
+      "description": "Switch to previous tab in rotation"
+    }
+  }
+}
