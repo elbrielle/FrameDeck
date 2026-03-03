@@ -2,12 +2,17 @@
   "manifest_version": 3,
   "name": "FrameDeck",
   "version": "1.0.0",
-  "description": "Auto-rotate your browser tabs on any schedule. Open your sites, hit Start, go fullscreen — FrameDeck handles the rest. Perfect for dashboards, kiosks, classrooms, and digital signage.",
+  "description": "Turn your tabs into a auto rotating slide deck! ",
   "permissions": [
     "tabs",
     "storage",
     "offscreen"
   ],
+  "content_scripts": [{
+    "matches": ["<all_urls>"],
+    "js": ["content.js"],
+    "run_at": "document_idle"
+  }],
   "action": {
     "default_popup": "popup.html",
     "default_icon": {
