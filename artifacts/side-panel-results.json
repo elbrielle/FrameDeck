@@ -1,0 +1,13 @@
+{
+  "date": "2026-09-27T19:01:48.183Z",
+  "browser": "153.0.8010.12",
+  "version": "1.2.0",
+  "passed": true,
+  "checks": [
+    "toolbar configured for side panel",
+    "same panel across three 7/10-second switches",
+    "native Pause freezes remaining time",
+    "native Resume",
+    "native Stop retains panel"
+  ]
+}

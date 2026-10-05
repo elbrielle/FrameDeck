@@ -1,0 +1,32 @@
+{
+  "date": "2026-09-26T03:40:17.635Z",
+  "passed": true,
+  "checks": [
+    {
+      "name": "5-second rotation with popup closed and Playwright detached",
+      "elapsedMs": 6276,
+      "currentIndex": 1
+    },
+    {
+      "name": "31-second alarm crosses natural worker shutdown with no popup/debugger",
+      "elapsedMs": 33498,
+      "currentIndex": 1,
+      "lifecycle": [
+        {
+          "action": "destroyed",
+          "elapsedMs": 30008
+        },
+        {
+          "action": "created",
+          "elapsedMs": 30985
+        }
+      ]
+    },
+    {
+      "name": "browser restart preserves saved deck and clears runtime tab IDs",
+      "profiles": 1,
+      "isRotating": false
+    }
+  ],
+  "browser": "153.0.8010.12"
+}

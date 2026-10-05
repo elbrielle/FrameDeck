@@ -1,120 +1,83 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="popup.css">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>FrameDeck</title>
+  <link rel="stylesheet" href="popup.css">
 </head>
 <body>
-  <div class="popup">
-    <!-- Header -->
-    <div class="header">
-      <div class="header-title">
-        <div class="logo-mark">
-          <svg width="14" height="14" fill="none" stroke="#fff" stroke-width="2" viewBox="0 0 24 24">
-            <rect x="3" y="3" width="18" height="14" rx="2"/>
-            <path d="M7 21h10M12 17v4"/>
-          </svg>
+  <main class="popup">
+    <div class="control-panel">
+      <h1 class="sr-only">FrameDeck controls</h1>
+      <div class="overview">
+        <div class="overview-copy">
+          <span id="statusBadge" class="sr-only" role="status">Loading tabs</span>
+          <div id="selectionSummary" class="deck-summary" aria-label="Selected deck">
+            <p class="deck-count"><strong id="selectedCount">0</strong><span id="selectedUnit">tabs</span></p>
+            <p class="deck-loop"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m16 3 4 4-4 4M20 7H7a4 4 0 0 0-4 4m5 10-4-4 4-4M4 17h13a4 4 0 0 0 4-4"/></svg><span><strong id="loopDuration">0s</strong> per loop</span></p>
+          </div>
+          <section id="playbackInfo" aria-label="Current tab" hidden>
+            <p id="tabPosition"></p>
+            <p id="currentTitle"></p>
+          </section>
         </div>
-        <span>FrameDeck</span>
-      </div>
-      <div class="header-status" id="statusBadge"></div>
-    </div>
-
-    <!-- Profiles -->
-    <div class="section">
-      <div class="section-label">Profile</div>
-      <div class="profile-row">
-        <select id="profileSelect" class="profile-select">
-          <option value="">-- None --</option>
-        </select>
-        <button class="icon-btn" id="loadProfileBtn" title="Load profile tabs">
-          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-        </button>
-        <button class="icon-btn" id="saveProfileBtn" title="Save current setup">
-          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-        </button>
-        <button class="icon-btn icon-btn-danger" id="deleteProfileBtn" title="Delete profile">
-          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
-        </button>
-      </div>
-    </div>
-
-    <!-- Tab List -->
-    <div class="section">
-      <div class="section-label">Tabs in rotation</div>
-      <div class="tab-list" id="tabList">
-        <div class="tab-list-loading">Loading tabs...</div>
-      </div>
-      <div class="tab-actions">
-        <button class="link-btn" id="selectAllBtn">Select all</button>
-        <span class="tab-actions-divider">|</span>
-        <button class="link-btn" id="selectNoneBtn">Select none</button>
-      </div>
-    </div>
-
-    <!-- Settings -->
-    <div class="section">
-      <div class="section-label">Settings</div>
-      <div class="setting-row">
-        <span class="setting-label">Default interval</span>
-        <div class="interval-compact">
-          <input type="number" id="intervalInput" min="5" max="600" value="30">
-          <span class="interval-unit">sec</span>
+        <div class="pace" id="timerShape">
+          <div id="paceControl">
+            <label for="intervalInput">Seconds / tab</label>
+            <input id="intervalInput" type="number" min="5" max="600" step="1" value="30" inputmode="numeric" aria-describedby="intervalHint">
+            <span id="intervalHint">5 to 600 seconds</span>
+          </div>
+          <div id="countdown" hidden><span id="countdownLabel">Next tab in</span><strong id="remainingTime">30</strong><span>seconds</span></div>
         </div>
       </div>
-      <div class="setting-row">
-        <span class="setting-label">Countdown overlay</span>
-        <label class="toggle-switch">
-          <input type="checkbox" id="countdownToggle" checked>
-          <span class="toggle-track"></span>
-        </label>
-      </div>
-      <div class="setting-row">
-        <span class="setting-label">Fade transitions</span>
-        <label class="toggle-switch">
-          <input type="checkbox" id="transitionsToggle" checked>
-          <span class="toggle-track"></span>
-        </label>
-      </div>
-    </div>
-
-    <!-- Controls -->
-    <div class="controls">
-      <button class="btn-primary" id="startBtn">
-        <svg class="btn-icon" width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-        <span>Start Rotation</span>
-      </button>
-      <div class="active-controls" id="activeControls" style="display:none">
-        <div class="control-row">
-          <button class="btn-secondary" id="prevBtn" title="Previous tab (Alt+Left)">
-            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
-          </button>
-          <button class="btn-primary btn-flex" id="pauseResumeBtn">
-            <svg id="pauseIcon" width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>
-            <svg id="playIcon" width="16" height="16" fill="currentColor" viewBox="0 0 24 24" style="display:none"><path d="M8 5v14l11-7z"/></svg>
-            <span id="pauseResumeLabel">Pause</span>
-          </button>
-          <button class="btn-secondary" id="nextBtn" title="Next tab (Alt+Right)">
-            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
-          </button>
+      <div class="controls">
+        <button id="startBtn" class="primary" type="button" disabled><span class="play-symbol" aria-hidden="true">▶</span><span id="startLabel">Choose at least 2 tabs</span></button>
+        <div id="activeControls" class="transport" hidden>
+          <button class="icon-button" id="prevBtn" type="button" aria-label="Previous tab" title="Previous tab"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5v14M18 5l-9 7 9 7z"/></svg></button>
+          <button class="primary" id="pauseResumeBtn" type="button"><span id="pauseSymbol" aria-hidden="true">Ⅱ</span><span id="pauseResumeLabel">Pause</span></button>
+          <button class="icon-button" id="nextBtn" type="button" aria-label="Next tab" title="Next tab"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 5v14M6 5l9 7-9 7z"/></svg></button>
+          <button class="icon-button stop" id="stopBtn" type="button" aria-label="Stop rotation" title="Stop rotation"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="2"/></svg></button>
         </div>
-        <button class="btn-danger" id="stopBtn">Stop Rotation</button>
+        <p id="feedback" class="feedback" role="status" aria-live="polite" hidden></p>
       </div>
     </div>
-
-    <!-- Hints -->
-    <div class="hints">
-      <span class="kbd">Alt+Space</span> play/pause
-      <span class="kbd">Alt+&larr;</span><span class="kbd">Alt+&rarr;</span> navigate
-      <span class="hint-sep">&middot;</span>
-      <span class="kbd">F11</span> fullscreen
-    </div>
-  </div>
-
+    <section class="queue" aria-labelledby="queueTitle">
+      <h2 id="queueTitle">Tabs</h2>
+      <div class="queue-tools"><p id="queueHint">Drag to arrange, or use the arrows.</p><button class="text-button" id="selectAllBtn" type="button">Select all</button><button class="text-button" id="selectNoneBtn" type="button">Clear</button></div>
+      <div id="tabList" class="tab-list" role="list" aria-label="Tabs in rotation"><p class="empty">Loading tabs...</p></div>
+    </section>
+    <details id="decksPanel" class="disclosure">
+      <summary><span>Saved decks</span><span class="detail-meta" id="deckCount">None yet</span><span class="chevron" aria-hidden="true">⌄</span></summary>
+      <div class="detail-body">
+        <p>Save this rotation so you can load it again.</p>
+        <label class="sr-only" for="profileSelect">Saved deck</label>
+        <div class="profile-row"><select id="profileSelect"><option value="">Choose a deck</option></select><button id="loadProfileBtn" class="tonal" type="button" disabled>Load</button></div>
+        <div class="profile-actions"><button id="saveProfileBtn" class="text-button" type="button">Save current deck</button><button id="deleteProfileBtn" class="text-button danger" type="button" disabled>Delete</button></div>
+      </div>
+    </details>
+    <details class="disclosure" id="optionsPanel">
+      <summary><span>Page effects &amp; shortcuts</span><span class="chevron" aria-hidden="true">⌄</span></summary>
+      <div class="detail-body">
+        <label class="setting-row" for="countdownToggle"><span>Page countdown<small>Show the time until the next tab.</small></span><input id="countdownToggle" class="switch" type="checkbox" role="switch"></label>
+        <label class="setting-row" for="transitionsToggle"><span>Fade between tabs<small>Fade out before switching tabs.</small></span><input id="transitionsToggle" class="switch" type="checkbox" role="switch"></label>
+        <p class="permission-note">Countdowns and fades need website access. Chrome blocks them on some pages, including the Web Store. You can rotate tabs without enabling these.</p>
+        <button class="text-button" id="revokeAccessBtn" type="button" hidden>Remove website access</button>
+        <button class="text-button shortcut-link" id="shortcutsBtn" type="button">Customize keyboard shortcuts <span aria-hidden="true">↗</span></button>
+        <p id="shortcutHint">Use Chrome's fullscreen command to hide the browser controls.</p>
+      </div>
+    </details>
+    <footer>Decks are saved in this browser. <a href="privacy.html" target="_blank" rel="noopener">Privacy</a></footer>
+  </main>
+  <dialog id="profileDialog" aria-labelledby="dialogTitle">
+    <form id="profileForm">
+      <h2 id="dialogTitle">Save your deck</h2><p id="dialogHint">Use a name like Morning announcements.</p>
+      <label id="nameLabel" for="profileName">Deck name</label><input id="profileName" type="text" maxlength="100" placeholder="Morning announcements" required autocomplete="off">
+      <p id="dialogError" class="dialog-error" role="alert" hidden></p>
+      <div class="dialog-actions"><button id="cancelDialogBtn" class="text-button" type="button">Cancel</button><button id="confirmDialogBtn" class="tonal" type="submit">Save deck</button></div>
+    </form>
+  </dialog>
   <script src="popup.js"></script>
 </body>
 </html>
