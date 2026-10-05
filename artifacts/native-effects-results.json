@@ -1,0 +1,12 @@
+{
+  "passed": true,
+  "browser": "153.0.8010.12",
+  "date": "2026-09-26T03:40:06.005Z",
+  "checks": [
+    "native grant",
+    "real injection",
+    "reload deadline",
+    "next fade cleanup",
+    "permission revoke"
+  ]
+}

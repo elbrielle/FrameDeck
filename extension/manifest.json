@@ -1,52 +1,59 @@
 {
   "manifest_version": 3,
   "name": "FrameDeck",
-  "version": "1.0.0",
-  "description": "Turn your tabs into a auto rotating slide deck! ",
+  "version": "1.2.0",
+  "description": "Use webpages as a slide deck, even when they block embedding. Rotate through tabs with separate timing for each page.",
   "permissions": [
     "tabs",
     "storage",
-    "offscreen"
+    "alarms",
+    "scripting",
+    "sidePanel"
   ],
-  "content_scripts": [{
-    "matches": ["<all_urls>"],
-    "js": ["content.js"],
-    "run_at": "document_idle"
-  }],
   "action": {
-    "default_popup": "popup.html",
     "default_icon": {
       "16": "icons/icon16.png",
       "48": "icons/icon48.png",
-      "128": "icons/icon128.png"
-    }
+      "128": "icons/icon128.png",
+      "32": "icons/icon32.png"
+    },
+    "default_title": "FrameDeck: rotate your tabs"
   },
   "background": {
     "service_worker": "background.js"
   },
+  "side_panel": {
+    "default_path": "popup.html"
+  },
   "icons": {
     "16": "icons/icon16.png",
     "48": "icons/icon48.png",
-    "128": "icons/icon128.png"
+    "128": "icons/icon128.png",
+    "32": "icons/icon32.png"
   },
   "commands": {
     "toggle-rotation": {
       "suggested_key": {
-        "default": "Alt+Space"
+        "default": "Alt+Shift+P"
       },
       "description": "Toggle tab rotation play/pause"
     },
     "next-tab": {
       "suggested_key": {
-        "default": "Alt+Right"
+        "default": "Alt+Shift+Right"
       },
       "description": "Switch to next tab in rotation"
     },
     "prev-tab": {
       "suggested_key": {
-        "default": "Alt+Left"
+        "default": "Alt+Shift+Left"
       },
       "description": "Switch to previous tab in rotation"
     }
-  }
+  },
+  "minimum_chrome_version": "120",
+  "optional_host_permissions": [
+    "http://*/*",
+    "https://*/*"
+  ]
 }

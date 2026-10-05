@@ -1,84 +1,55 @@
 # FrameDeck
 
-> Turn your browser tabs into an auto-rotating slide deck.
+FrameDeck is a free Chrome extension that turns webpages into a slide deck by rotating through browser tabs.
 
-FrameDeck is a Chrome extension that automatically cycles through your open browser tabs on a timer. Perfect for classroom displays, dashboards, kiosks, digital signage, or any scenario where you want hands-free tab rotation.
+I wanted a slide deck of the pages I use while teaching: today's Canvas module, the bell schedule countdown, the hall-pass app. Many websites block iframe embedding. FrameDeck uses browser tabs as the slides, which solved the issue for me.
 
-## Features
+![FrameDeck setup](store_assets/v1.1.0/screenshot-setup.png)
 
-- **Auto-rotate tabs** — Set a timer and FrameDeck switches between your selected tabs automatically
-- **Per-tab custom durations** — Override the default interval for individual tabs (show announcements for 60s, schedule for 15s)
-- **Drag-to-reorder** — Arrange your tab rotation order with drag and drop
-- **Saved profiles** — Save named presets of tab configurations (e.g. "Period 1", "Morning Announcements") and load them instantly
-- **Visual countdown overlay** — A subtle progress bar and timer injected into the active page so viewers know when the next switch is coming
-- **Smooth fade transitions** — Clean fade effect between tab switches (toggleable)
-- **Keyboard shortcuts** — Control rotation without touching the mouse
-- **Fullscreen ready** — Press F11 and let FrameDeck handle the rest
-- **No iframe limitations** — Works with any website since it uses real browser tabs, not iframes
+## Try it locally
 
-## Installation
+Requires Chrome 120 or newer.
 
-1. Clone or download this repository
-2. Open `chrome://extensions` in Chrome
-3. Enable **Developer mode** (toggle in the top-right)
-4. Click **Load unpacked**
-5. Select the `extension` folder inside this repo
+1. Open `chrome://extensions` in Chrome.
+2. Turn on **Developer mode**, choose **Load unpacked**, and select this repository's `extension` folder.
+3. Open the websites you want to show in one window, then open FrameDeck's side panel from Chrome's toolbar. The controls stay open as tabs rotate.
+4. Select and arrange the tabs, set the default duration, and start your deck.
 
-## Usage
+Use the per-tab duration to give an announcement more time. Pause, resume, or step between tabs from the side panel. Close the panel when you want more room for the page; rotation continues. Use Chrome's fullscreen command if you want to hide browser controls; FrameDeck does not enter fullscreen automatically.
 
-1. Open the tabs you want in your rotation
-2. Click the FrameDeck icon in the Chrome toolbar
-3. Check/uncheck tabs to include in rotation
-4. Drag tabs to set your preferred order
-5. Set the default interval (seconds per tab)
-6. Optionally set custom durations for individual tabs
-7. Click **Start Rotation**
-8. Press **F11** for fullscreen
+## Saved decks
 
-### Profiles
+A saved deck keeps the selected tabs, their order, durations, and display settings on this device. Loading it reuses matching tabs in the current window and opens missing ones. It preserves repeated URLs as separate entries. Loading a deck does not start rotation automatically.
 
-Save your current tab setup as a named profile:
+## Controls and access
 
-1. Configure your tabs, intervals, and settings
-2. Click the **save icon** in the Profile section
-3. Enter a name (e.g. "Period 1")
-4. To reload later, select the profile from the dropdown and click the **load icon**
+- Arrange tabs by dragging or with the move buttons.
+- Suggested shortcuts: `Alt+Shift+P` pauses/resumes an active deck; `Alt+Shift+Left` and `Alt+Shift+Right` step between tabs. Change keyboard commands at `chrome://extensions/shortcuts`; your operating system or another extension may reserve a suggested shortcut.
+- Page countdowns and transitions need optional website access. Tab rotation works without those page effects. Chrome blocks effects on protected pages such as browser settings and the Chrome Web Store.
+- Only one deck rotates at a time. Closing a selected tab removes it from the rotation. Restarting Chrome ends the rotation; saved decks remain available.
+- Timing is best effort. Computer sleep, browser resource limits, or an interrupted extension process may delay a switch. FrameDeck is not a precision timer or a managed kiosk.
 
-### Settings
+## Privacy
 
-| Setting | Description |
-|---------|-------------|
-| Default interval | Time in seconds before switching to the next tab (5-600) |
-| Countdown overlay | Shows a progress bar and countdown timer on the active page |
-| Fade transitions | Smooth fade effect when switching between tabs |
+Tab titles, URLs, saved decks, and preferences stay in this Chrome profile. FrameDeck has no account, analytics, advertisements, or server. It does not read page text or form entries. Restored websites still make their normal network requests. Read the [privacy policy](docs/PRIVACY.md).
 
-## Keyboard Shortcuts
+For troubleshooting and reporting a problem, see [FrameDeck help](docs/SUPPORT.md). Release changes are in [CHANGELOG.md](CHANGELOG.md).
 
-| Shortcut | Action |
-|----------|--------|
-| `Alt + Space` | Toggle play/pause |
-| `Alt + Left` | Previous tab |
-| `Alt + Right` | Next tab |
-| `F11` | Toggle fullscreen (Chrome built-in) |
+## Development and packaging
 
-## Architecture
+There is no build step or runtime framework. Edit the files in `extension`, reload the extension in Chrome, and reopen its side panel to see changes.
 
-```
-extension/
-  manifest.json       Manifest V3 config
-  background.js       Service worker — rotation logic, tab switching, profiles
-  offscreen.html/js   Reliable timer (service workers get killed by Chrome)
-  content.js          Countdown overlay + fade transitions injected into pages
-  popup.html/css/js   Extension popup UI
-  icons/              Extension icons
+```sh
+node --test tests/*.test.cjs
+python3 scripts/package.py
 ```
 
-**Key design decisions:**
-- **Offscreen document** for timers — Chrome kills service workers after 30s of inactivity and `chrome.alarms` has a 30s minimum interval. The offscreen document runs a reliable `setInterval`.
-- **Content script** for overlays — Injects a minimal countdown bar and fade transition into pages, communicating with the background via `chrome.runtime.onMessage`.
-- **Per-tab timers** — After each tab switch, the timer restarts with that tab's specific duration, enabling different display times per tab.
-- **Real tabs, not iframes** — Most useful sites (Google Slides, Canvas LMS, etc.) block iframe embedding via `X-Frame-Options`. Using real browser tabs bypasses this entirely.
+The script checks the manifest and icon dimensions, writes a ZIP with `manifest.json` at its root, and verifies the packaged bytes. It also stages the upload files and documentation in `dist/FrameDeck-1.1.0-submission/`, with a checksum inventory and a `START-HERE.md` guide. Sorted entries and fixed timestamps make repeated builds of unchanged files reproducible in the same Python environment. The ZIP excludes tests, documentation, store art, and repository metadata.
+
+Chrome's event-driven background worker manages rotation with a persisted deadline, a native alarm, and short in-memory timers. Current rotation lives in session storage; saved decks and preferences live in local storage. The side panel controls the worker, and optional scripts draw the countdown and transition on permitted pages. No offscreen timer or remote code is used.
+
+See [the validation record](docs/QA.md) for observed browser results and repeatable checks. See [the release checklist](docs/RELEASE.md) for browser checks and submission steps, and [store listing copy](docs/STORE_LISTING.md) for review-ready text. A built ZIP is a release candidate; Chrome Web Store approval and publication are separate steps.
 
 ## License
 
-MIT
+[MIT](LICENSE)
